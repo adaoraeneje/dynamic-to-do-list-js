@@ -1,74 +1,48 @@
+// Wait for DOM to fully load
 document.addEventListener('DOMContentLoaded', function () {
+    // Select DOM elements
     const addButton = document.getElementById('add-task-btn');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
 
-    // Load saved tasks
-    loadTasks();
+    // Function to add a new task
+    function addTask() {
+        const taskText = taskInput.value.trim(); // Get and trim input value
 
-    // ALX-compliant addTask function
-    function addTask(taskFromStorage = null) {
-        const taskText = taskFromStorage ? taskFromStorage : taskInput.value.trim();
-
+        // If the input is empty, alert the user
         if (taskText === "") {
             alert("Please enter a task.");
             return;
         }
 
-        // Create list item
+        // Create the list item (li)
         const li = document.createElement('li');
         li.textContent = taskText;
 
-        // Create remove button
+        // Create the remove button
         const removeBtn = document.createElement('button');
         removeBtn.textContent = "Remove";
         removeBtn.className = 'remove-btn';
 
-        // Remove from DOM and localStorage
+        // When remove button is clicked, remove the task
         removeBtn.onclick = function () {
             taskList.removeChild(li);
-            removeTaskFromStorage(taskText);
         };
 
+        // Append remove button to li
         li.appendChild(removeBtn);
+
+        // Append li to the task list
         taskList.appendChild(li);
 
-        // Save to localStorage only if it's a new task
-        if (!taskFromStorage) {
-            saveTaskToStorage(taskText);
-        }
-
-        // Clear input if not loading from storage
-        if (!taskFromStorage) {
-            taskInput.value = "";
-        }
+        // Clear the input field
+        taskInput.value = "";
     }
 
-    // Save task to localStorage
-    function saveTaskToStorage(taskText) {
-        const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-        storedTasks.push(taskText);
-        localStorage.setItem('tasks', JSON.stringify(storedTasks));
-    }
+    // Event listener for Add Task button
+    addButton.addEventListener('click', addTask);
 
-    // Remove task from localStorage
-    function removeTaskFromStorage(taskText) {
-        let storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-        storedTasks = storedTasks.filter(task => task !== taskText);
-        localStorage.setItem('tasks', JSON.stringify(storedTasks));
-    }
-
-    // Load tasks from localStorage
-    function loadTasks() {
-        const storedTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-        storedTasks.forEach(task => addTask(task));
-    }
-
-    // Event listeners (exactly as ALX requires)
-    addButton.addEventListener('click', function () {
-        addTask();
-    });
-
+    // Event listener for pressing Enter key in input field
     taskInput.addEventListener('keypress', function (event) {
         if (event.key === 'Enter') {
             addTask();
